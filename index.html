@@ -3,24 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Belajar — Learn Malay</title>
+<title>Lancar & Legal — Malay Practice</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Work+Sans:wght@400;500;600;700&display=swap');
 
   :root{
     --bg:#0F1B1A;
-    --bg-soft:#16302C;
     --panel:#173330;
+    --panel-soft:#1D3B37;
     --line: rgba(255,255,255,.10);
     --ink:#F3F1E7;
     --ink-dim: rgba(243,241,231,.62);
     --gold:#D9A441;
     --gold-soft:#EFC978;
-    --coral:#E06C55;
+    --coral:#E0876C;
     --teal:#3FA79A;
     --teal-deep:#1F5850;
     --good:#4EAE7C;
     --bad:#E0644F;
+    --warn:#E0A94F;
   }
 
   *{ box-sizing:border-box; }
@@ -33,87 +34,156 @@
       radial-gradient(ellipse 120% 80% at 50% 100%, rgba(217,164,65,.08), transparent 60%);
   }
 
-  #app{ position:relative; z-index:1; max-width:560px; margin:0 auto; padding:28px 18px 60px; }
+  #app{ position:relative; z-index:1; max-width:580px; margin:0 auto; padding:28px 18px 60px; }
 
-  header{ text-align:center; margin-bottom:22px; }
-  .kicker{ font-size:.72rem; letter-spacing:.2em; text-transform:uppercase; color:var(--gold-soft); margin-bottom:8px; }
+  header{ text-align:center; margin-bottom:20px; }
+  .kicker{ font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:var(--gold-soft); margin-bottom:8px; }
   h1{
     font-family:'Fraunces',serif; font-weight:700; margin:0;
-    font-size:clamp(1.8rem,7vw,2.5rem); line-height:1.1;
+    font-size:clamp(1.7rem,7vw,2.4rem); line-height:1.1;
   }
   h1 span{ color:var(--gold-soft); }
-  .subline{ color:var(--ink-dim); font-size:.92rem; margin-top:10px; max-width:40ch; margin-left:auto; margin-right:auto; }
+  .subline{ color:var(--ink-dim); font-size:.9rem; margin-top:10px; max-width:44ch; margin-left:auto; margin-right:auto; }
 
-  /* -------- category grid -------- */
   .stage{ display:none; }
   .stage.active{ display:block; animation:fadeIn .35s ease; }
   @keyframes fadeIn{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
 
-  .cat-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:22px; }
+  button{ font-family:inherit; }
+
+  /* -------- home -------- */
+  .test-cta{
+    background:linear-gradient(135deg, var(--teal-deep), var(--panel-soft));
+    border:1px solid var(--teal); border-radius:18px; padding:20px; margin-top:20px;
+    display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;
+    width:100%; color:var(--ink);
+  }
+  .test-cta .emoji{ font-size:1.8rem; flex-shrink:0; }
+  .test-cta .txt strong{ display:block; font-size:1rem; margin-bottom:3px; }
+  .test-cta .txt span{ color:var(--ink-dim); font-size:.82rem; }
+  .test-cta .arrow{ margin-left:auto; color:var(--gold-soft); font-size:1.2rem; }
+
+  .reco-strip{
+    margin-top:16px; background:rgba(224,135,108,.10); border:1px solid rgba(224,135,108,.35);
+    border-radius:14px; padding:13px 16px; font-size:.84rem; color:var(--ink);
+  }
+  .reco-strip strong{ color:var(--coral); }
+  .reco-strip .retake{ display:block; margin-top:6px; color:var(--gold-soft); text-decoration:underline; cursor:pointer; font-size:.8rem; background:none; border:none; padding:0; }
+
+  .section-label{ font-size:.75rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-dim); margin:26px 0 10px 2px; }
+
+  .cat-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
   .cat-card{
     background:var(--panel); border:1px solid var(--line); border-radius:16px;
-    padding:18px 14px; text-align:left; cursor:pointer; color:var(--ink);
-    transition:transform .15s ease, border-color .15s ease; font-family:inherit;
+    padding:16px 14px; text-align:left; cursor:pointer; color:var(--ink);
+    transition:transform .15s ease, border-color .15s ease; position:relative;
   }
   .cat-card:hover, .cat-card:focus-visible{ transform:translateY(-2px); border-color:var(--gold); outline:none; }
-  .cat-card .emoji{ font-size:1.5rem; display:block; margin-bottom:8px; }
-  .cat-card .name{ font-weight:600; font-size:.98rem; }
-  .cat-card .count{ color:var(--ink-dim); font-size:.78rem; margin-top:4px; }
+  .cat-card .emoji{ font-size:1.4rem; display:block; margin-bottom:6px; }
+  .cat-card .type-tag{
+    position:absolute; top:14px; right:12px; font-size:.62rem; letter-spacing:.05em; text-transform:uppercase;
+    padding:3px 7px; border-radius:6px; font-weight:600;
+  }
+  .type-tag.conversational{ background:rgba(63,167,154,.18); color:var(--teal); }
+  .type-tag.legal{ background:rgba(217,164,65,.18); color:var(--gold-soft); }
+  .cat-card .name{ font-weight:600; font-size:.92rem; margin-top:2px; }
+  .cat-card .count{ color:var(--ink-dim); font-size:.75rem; margin-top:4px; }
   .cat-card .bar{ height:4px; border-radius:2px; background:rgba(255,255,255,.08); margin-top:10px; overflow:hidden; }
   .cat-card .bar-fill{ height:100%; background:var(--teal); border-radius:2px; }
+  .cat-card.focus{ border-color:var(--coral); }
+  .cat-card .focus-tag{
+    display:inline-block; margin-top:8px; font-size:.65rem; color:var(--coral); font-weight:600;
+    letter-spacing:.04em; text-transform:uppercase;
+  }
 
-  /* -------- flashcards -------- */
+  /* -------- shared top row -------- */
   .top-row{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; gap:10px; }
   .back-btn{
     background:none; border:1px solid var(--line); color:var(--ink-dim); border-radius:10px;
-    padding:7px 12px; font-size:.82rem; cursor:pointer; font-family:inherit;
+    padding:7px 12px; font-size:.82rem; cursor:pointer;
   }
   .back-btn:hover{ color:var(--ink); border-color:var(--gold); }
   .progress-label{ font-size:.8rem; color:var(--ink-dim); }
+
   .mode-toggle{ display:flex; gap:8px; margin-bottom:18px; }
   .mode-btn{
     flex:1; padding:9px; border-radius:10px; border:1px solid var(--line); background:transparent;
-    color:var(--ink-dim); font-family:inherit; font-size:.85rem; cursor:pointer;
+    color:var(--ink-dim); font-size:.85rem; cursor:pointer;
   }
   .mode-btn.on{ background:var(--teal-deep); border-color:var(--teal); color:var(--ink); }
 
+  /* -------- flashcards -------- */
   .card{
     background:var(--panel); border:1px solid var(--line); border-radius:20px;
-    min-height:220px; display:flex; flex-direction:column; align-items:center; justify-content:center;
-    text-align:center; padding:32px 20px; cursor:pointer; user-select:none;
-    position:relative;
+    min-height:230px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:32px 22px; cursor:pointer; user-select:none; position:relative;
   }
-  .card .hint{ position:absolute; top:14px; right:16px; font-size:.7rem; color:var(--ink-dim); letter-spacing:.05em; }
-  .card .word{ font-family:'Fraunces',serif; font-weight:700; font-size:clamp(1.6rem,7vw,2.2rem); }
+  .card .hint{ position:absolute; top:14px; right:16px; font-size:.68rem; color:var(--ink-dim); letter-spacing:.05em; }
+  .speak-btn{
+    position:absolute; top:12px; left:14px; background:none; border:1px solid var(--line);
+    color:var(--ink-dim); width:32px; height:32px; border-radius:50%; cursor:pointer; font-size:.95rem;
+  }
+  .speak-btn:hover{ border-color:var(--gold); color:var(--gold-soft); }
+  .card .word{ font-family:'Fraunces',serif; font-weight:700; font-size:clamp(1.35rem,6.5vw,1.9rem); line-height:1.25; }
   .card .word.malay{ color:var(--gold-soft); }
-  .card .sub{ margin-top:10px; color:var(--ink-dim); font-size:.9rem; }
+  .card .sub{ margin-top:10px; color:var(--ink-dim); font-size:.88rem; }
+  .card .note{ margin-top:12px; color:rgba(243,241,231,.5); font-size:.78rem; font-style:italic; max-width:38ch; }
 
   .nav-row{ display:flex; gap:10px; margin-top:16px; }
   .nav-btn{
     flex:1; padding:13px; border-radius:12px; border:none; background:var(--teal);
-    color:#08201C; font-weight:600; font-family:inherit; cursor:pointer; font-size:.92rem;
+    color:#08201C; font-weight:600; cursor:pointer; font-size:.92rem;
   }
   .nav-btn.ghost{ background:transparent; border:1px solid var(--line); color:var(--ink); }
   .nav-btn:active{ transform:scale(.98); }
 
-  /* -------- quiz -------- */
-  .quiz-q{ text-align:center; margin-bottom:20px; }
-  .quiz-q .prompt-label{ font-size:.78rem; color:var(--ink-dim); text-transform:uppercase; letter-spacing:.1em; }
-  .quiz-q .prompt-word{ font-family:'Fraunces',serif; font-weight:700; font-size:clamp(1.7rem,7vw,2.3rem); color:var(--gold-soft); margin-top:6px; }
+  /* -------- quiz / diagnostic -------- */
+  .quiz-q{ text-align:center; margin-bottom:20px; position:relative; }
+  .quiz-q .prompt-label{ font-size:.75rem; color:var(--ink-dim); text-transform:uppercase; letter-spacing:.1em; }
+  .quiz-q .prompt-word-row{ display:flex; align-items:center; justify-content:center; gap:10px; margin-top:6px; }
+  .quiz-q .prompt-word{ font-family:'Fraunces',serif; font-weight:700; font-size:clamp(1.4rem,6.5vw,1.9rem); color:var(--gold-soft); }
+  .quiz-q .speak-inline{ background:none; border:1px solid var(--line); color:var(--ink-dim); width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:.85rem; flex-shrink:0; }
+
   .choices{ display:grid; gap:10px; }
   .choice{
-    background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:15px 16px;
-    text-align:left; font-family:inherit; font-size:.96rem; color:var(--ink); cursor:pointer;
+    background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:14px 16px;
+    text-align:left; font-size:.94rem; color:var(--ink); cursor:pointer;
   }
   .choice.correct{ border-color:var(--good); background:rgba(78,174,124,.14); }
   .choice.wrong{ border-color:var(--bad); background:rgba(224,100,79,.14); }
   .choice[disabled]{ cursor:default; }
+
+  .answer-note{ margin-top:12px; font-size:.82rem; color:var(--ink-dim); font-style:italic; text-align:center; min-height:1.2em; }
 
   .score-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; font-size:.85rem; color:var(--ink-dim); }
   .score-row strong{ color:var(--ink); }
 
   .quiz-done{ text-align:center; padding:30px 10px; }
   .quiz-done .big{ font-family:'Fraunces',serif; font-weight:700; font-size:2.2rem; color:var(--gold-soft); }
+  .quiz-done .verdict{ margin-top:8px; color:var(--ink-dim); font-size:.86rem; }
+
+  .diag-progress{ height:5px; background:rgba(255,255,255,.08); border-radius:3px; margin-bottom:22px; overflow:hidden; }
+  .diag-progress-fill{ height:100%; background:var(--gold); border-radius:3px; transition:width .3s ease; }
+  .diag-cat-tag{ display:inline-block; font-size:.68rem; color:var(--ink-dim); text-transform:uppercase; letter-spacing:.06em; margin-bottom:2px; }
+
+  /* -------- results -------- */
+  .results-intro{ text-align:center; margin-bottom:24px; }
+  .results-intro .big{ font-family:'Fraunces',serif; font-weight:700; font-size:1.6rem; }
+  .result-row{
+    background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin-bottom:10px;
+  }
+  .result-row .rr-top{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .result-row .rr-name{ font-weight:600; font-size:.9rem; display:flex; align-items:center; gap:6px; }
+  .result-row .rr-pct{ font-size:.85rem; color:var(--ink-dim); }
+  .result-row.weak .rr-pct{ color:var(--coral); font-weight:600; }
+  .result-row .bar{ height:5px; border-radius:3px; background:rgba(255,255,255,.08); overflow:hidden; }
+  .result-row .bar-fill{ height:100%; border-radius:3px; background:var(--teal); }
+  .result-row.weak .bar-fill{ background:var(--coral); }
+  .result-row .focus-pill{
+    font-size:.62rem; text-transform:uppercase; letter-spacing:.04em; color:var(--coral);
+    border:1px solid rgba(224,135,108,.5); border-radius:6px; padding:2px 6px; font-weight:600;
+  }
+  .results-actions{ display:flex; flex-direction:column; gap:10px; margin-top:22px; }
 
   footer{ text-align:center; margin-top:34px; color:var(--ink-dim); font-size:.75rem; }
 </style>
@@ -121,20 +191,65 @@
 <body>
 <div id="app">
   <header>
-    <div class="kicker">Bahasa Malaysia</div>
-    <h1>Belajar <span>Bahasa</span></h1>
-    <p class="subline">Learn everyday Malay words and phrases with flashcards and quizzes.</p>
+    <div class="kicker">Bahasa Melayu · Percakapan &amp; Undang-undang</div>
+    <h1>Lancar <span>&amp; Legal</span></h1>
+    <p class="subline">Brush up on conversational and legal Malay. Take a quick placement check, then focus practice where it actually helps.</p>
   </header>
 
-  <!-- CATEGORY SELECT -->
-  <section id="stage-categories" class="stage active">
+  <!-- HOME -->
+  <section id="stage-home" class="stage active">
+    <button class="test-cta" id="startTestBtn">
+      <span class="emoji">🎯</span>
+      <span class="txt">
+        <strong>Take the placement check</strong>
+        <span>16 quick questions across every topic — see where to focus first</span>
+      </span>
+      <span class="arrow">→</span>
+    </button>
+
+    <div id="recoStrip" class="reco-strip" style="display:none;"></div>
+
+    <div class="section-label">Practice by topic</div>
     <div class="cat-grid" id="catGrid"></div>
   </section>
 
-  <!-- STUDY (flashcards / quiz) -->
+  <!-- DIAGNOSTIC -->
+  <section id="stage-diagnostic" class="stage">
+    <div class="top-row">
+      <button class="back-btn" id="diagBackBtn">← Cancel</button>
+      <span class="progress-label" id="diagProgressLabel"></span>
+    </div>
+    <div class="diag-progress"><div class="diag-progress-fill" id="diagProgressFill" style="width:0%"></div></div>
+
+    <div class="quiz-q">
+      <span class="diag-cat-tag" id="diagCatTag"></span>
+      <div class="prompt-label">What does this mean?</div>
+      <div class="prompt-word-row">
+        <div class="prompt-word" id="diagPromptWord">—</div>
+        <button class="speak-inline" id="diagSpeakBtn" title="Hear pronunciation">🔊</button>
+      </div>
+    </div>
+    <div class="choices" id="diagChoices"></div>
+    <div class="answer-note" id="diagAnswerNote"></div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="stage-results" class="stage">
+    <div class="results-intro">
+      <div class="prompt-label">Placement check complete</div>
+      <div class="big" id="resultsBigScore"></div>
+    </div>
+    <div id="resultsList"></div>
+    <div class="results-actions">
+      <button class="nav-btn" id="startRecoBtn">Practice weakest topic first</button>
+      <button class="nav-btn ghost" id="resultsHomeBtn">See all topics</button>
+    </div>
+  </section>
+
+  <!-- STUDY (flashcards / quiz for one category) -->
   <section id="stage-study" class="stage">
     <div class="top-row">
-      <button class="back-btn" id="backBtn">← Categories</button>
+      <button class="back-btn" id="backBtn">← Topics</button>
       <span class="progress-label" id="progressLabel"></span>
     </div>
 
@@ -145,9 +260,11 @@
 
     <div id="flashView">
       <div class="card" id="flashCard">
+        <button class="speak-btn" id="flashSpeakBtn" title="Hear pronunciation">🔊</button>
         <span class="hint">tap to flip</span>
         <div class="word malay" id="flashFront">—</div>
         <div class="sub" id="flashBack" style="display:none;"></div>
+        <div class="note" id="flashNote" style="display:none;"></div>
       </div>
       <div class="nav-row">
         <button class="nav-btn ghost" id="prevBtn">Prev</button>
@@ -161,103 +278,367 @@
         <span>Score: <strong id="quizScore">0</strong></span>
       </div>
       <div class="quiz-q">
-        <div class="prompt-label" id="quizPromptLabel">What does this mean?</div>
-        <div class="prompt-word" id="quizPromptWord">—</div>
+        <div class="prompt-label">What does this mean?</div>
+        <div class="prompt-word-row">
+          <div class="prompt-word" id="quizPromptWord">—</div>
+          <button class="speak-inline" id="quizSpeakBtn" title="Hear pronunciation">🔊</button>
+        </div>
       </div>
       <div class="choices" id="quizChoices"></div>
+      <div class="answer-note" id="quizAnswerNote"></div>
       <div class="quiz-done" id="quizDone" style="display:none;">
-        <div class="prompt-label">Quiz complete</div>
+        <div class="prompt-label">Topic complete</div>
         <div class="big" id="quizFinalScore"></div>
+        <div class="verdict" id="quizVerdict"></div>
         <div class="nav-row" style="margin-top:20px;">
           <button class="nav-btn ghost" id="quizRetryBtn">Retry</button>
-          <button class="nav-btn" id="quizBackBtn">Categories</button>
+          <button class="nav-btn" id="quizBackBtn">Topics</button>
         </div>
       </div>
     </div>
   </section>
 
-  <footer>Selamat belajar — happy learning</footer>
+  <footer>Selamat berlatih — happy practicing</footer>
 </div>
 
 <script>
 (function(){
+  /* [malay, english, note] — note is a usage tip, formal equivalent, or context */
   var VOCAB = {
-    greetings: { name: "Greetings", emoji: "👋", words: [
-      ["Selamat pagi", "Good morning"],
-      ["Selamat petang", "Good afternoon"],
-      ["Selamat malam", "Good night"],
-      ["Apa khabar?", "How are you?"],
-      ["Khabar baik", "I'm fine"],
-      ["Terima kasih", "Thank you"],
-      ["Sama-sama", "You're welcome"],
-      ["Selamat tinggal", "Goodbye (to one staying)"],
-      ["Jumpa lagi", "See you again"],
-      ["Maaf", "Sorry / excuse me"]
+    smalltalk: { name: "Small Talk", emoji: "☕", type: "conversational", words: [
+      ["Apa cerita?", "What's up? / What's new?", "Common opener among friends or colleagues"],
+      ["Lama tak jumpa!", "Long time no see!", ""],
+      ["Macam mana keadaan awak?", "How are you doing?", "Warmer than the textbook 'Apa khabar?'"],
+      ["Sihat-sihat je", "Doing fine, all good", "Typical reply to 'Apa khabar'"],
+      ["Tengah buat apa ni?", "What are you up to?", ""],
+      ["Jom lepak", "Let's hang out", "'Jom' = let's — very common invite"],
+      ["Boleh tahan", "Not bad, could be worse", "Neutral, slightly modest response"],
+      ["Alahai, penatnya", "Ugh, I'm so tired", "The '-nya' suffix adds emphasis to adjectives"],
+      ["Cuaca panas betul hari ni", "The weather's really hot today", "Small talk staple"],
+      ["Nanti kita catch up ye", "Let's catch up later", "Code-switching with English is completely normal"],
+      ["Ada apa-apa cerita menarik?", "Any interesting news?", ""],
+      ["Biasa-biasa je lah", "Just the usual", "'lah' softens the statement"]
     ]},
-    numbers: { name: "Numbers", emoji: "🔢", words: [
-      ["Satu", "One"], ["Dua", "Two"], ["Tiga", "Three"], ["Empat", "Four"],
-      ["Lima", "Five"], ["Enam", "Six"], ["Tujuh", "Seven"], ["Lapan", "Eight"],
-      ["Sembilan", "Nine"], ["Sepuluh", "Ten"]
+    particles: { name: "Particles & Slang", emoji: "💬", type: "conversational", words: [
+      ["lah", "Softening / emphasis particle", "\"Okay lah\" = fine then"],
+      ["kan", "Tag question — right?", "\"Awak dah makan kan?\" = You've eaten, right?"],
+      ["kot", "Maybe / perhaps", "\"Dia tak datang kot\" = Maybe she's not coming"],
+      ["punya", "Colloquial intensifier", "\"Sedap punya!\" = So delicious!"],
+      ["eh", "Filler expressing surprise or attention", "\"Eh, betul ke?\" = Oh, really?"],
+      ["weh / wei", "Casual address among friends", "Used like 'hey' or 'dude'"],
+      ["je", "Just / only", "\"Sikit je\" = just a little"],
+      ["pun", "Also / even", "\"Saya pun tak tahu\" = I don't know either"],
+      ["tau", "You know (for emphasis)", "\"Dia baik tau\" = She's actually really nice, you know"],
+      ["kan tak?", "Isn't that so?", "Seeking agreement or confirmation"]
     ]},
-    family: { name: "Family", emoji: "👨‍👩‍👧", words: [
-      ["Keluarga", "Family"], ["Ibu", "Mother"], ["Bapa", "Father"],
-      ["Abang", "Older brother"], ["Kakak", "Older sister"], ["Adik", "Younger sibling"],
-      ["Nenek", "Grandmother"], ["Datuk", "Grandfather"], ["Anak", "Child"], ["Suami/Isteri", "Husband/Wife"]
+    idioms: { name: "Idioms & Expressions", emoji: "🗣️", type: "conversational", words: [
+      ["Bagai aur dengan tebing", "Mutual dependence, inseparable", "Literally: like bamboo and the riverbank"],
+      ["Berat sama dipikul, ringan sama dijinjing", "Shared burdens, teamwork", "Classic proverb about cooperation"],
+      ["Cakap tak serupa bikin", "All talk, no action", "Calling out hypocrisy"],
+      ["Air tenang jangan disangka tiada buaya", "Still waters run deep", "Don't underestimate quiet people"],
+      ["Kacang lupakan kulit", "Forgetting one's roots", "Said of ungrateful people"],
+      ["Sudah terhantuk baru terngadah", "Learning the hard way", "Realizing a mistake only after suffering for it"],
+      ["Buat bodoh", "To play dumb", "\"Dia buat bodoh je\" = He's just pretending not to know"],
+      ["Panjang tangan", "Light-fingered, prone to stealing", ""],
+      ["Naik angin", "To get angry", "\"Boss naik angin tadi\" = The boss got angry earlier"],
+      ["Ada hati", "To have feelings for someone / to have the nerve to", "Meaning depends heavily on context"]
     ]},
-    food: { name: "Food & Drink", emoji: "🍜", words: [
-      ["Nasi", "Rice"], ["Air", "Water"], ["Ayam", "Chicken"], ["Ikan", "Fish"],
-      ["Sayur", "Vegetable"], ["Buah", "Fruit"], ["Sedap", "Delicious"], ["Lapar", "Hungry"],
-      ["Kenyang", "Full (satiated)"], ["Minum", "To drink"]
+    register: { name: "Formal vs Casual", emoji: "🎭", type: "conversational", words: [
+      ["Nak gi mana?", "Where are you going? (casual)", "Formal: Hendak pergi ke mana?"],
+      ["Takpe", "It's okay, never mind (casual)", "Formal: Tidak mengapa"],
+      ["Kenapa eh?", "Why though? (casual)", "Formal: Mengapa?"],
+      ["Aku / Awak", "I / you, among peers (casual)", "Formal: Saya / Anda"],
+      ["Korang", "You all (casual plural)", "Formal: Anda semua / kamu sekalian"],
+      ["Macam mana ni?", "What do we do now? (casual)", "Formal: Bagaimana keadaannya?"],
+      ["Tak'de", "Don't have / there isn't (casual)", "Formal: Tiada"],
+      ["Bley", "Can (chat/SMS slang)", "Formal: Boleh"],
+      ["Tunggu sat", "Wait a sec (casual)", "Formal: Tunggu sebentar"],
+      ["Owh gitu", "Oh I see (casual)", "Formal: Oh begitu"]
     ]},
-    phrases: { name: "Everyday Phrases", emoji: "💬", words: [
-      ["Saya tak faham", "I don't understand"], ["Tolong", "Please / help"],
-      ["Berapa harga ini?", "How much is this?"], ["Di mana tandas?", "Where is the toilet?"],
-      ["Saya nak...", "I want..."], ["Boleh tak?", "Is it okay? / Can I?"],
-      ["Tak apa", "It's okay / never mind"], ["Jom!", "Let's go!"],
-      ["Saya sesat", "I'm lost"], ["Bercakap Bahasa Inggeris?", "Do you speak English?"]
+    courtroom: { name: "Legal Profession & Court", emoji: "⚖️", type: "legal", words: [
+      ["Peguam", "Lawyer", ""],
+      ["Hakim", "Judge", ""],
+      ["Mahkamah", "Court", ""],
+      ["Plaintif", "Plaintiff", ""],
+      ["Defendan", "Defendant", ""],
+      ["Saksi", "Witness", ""],
+      ["Perbicaraan", "Trial / hearing", ""],
+      ["Saman", "Summons", ""],
+      ["Guaman", "Litigation / legal proceedings", ""],
+      ["Rayuan", "Appeal", ""],
+      ["Sabitan", "Conviction", ""],
+      ["Pendakwa Raya", "Public Prosecutor", ""]
     ]},
-    colors: { name: "Colors", emoji: "🎨", words: [
-      ["Merah", "Red"], ["Biru", "Blue"], ["Kuning", "Yellow"], ["Hijau", "Green"],
-      ["Hitam", "Black"], ["Putih", "White"], ["Oren", "Orange"], ["Ungu", "Purple"],
-      ["Perang", "Brown"], ["Merah jambu", "Pink"]
+    contracts: { name: "Contracts & Documents", emoji: "📄", type: "legal", words: [
+      ["Kontrak", "Contract", ""],
+      ["Perjanjian", "Agreement", ""],
+      ["Klausa", "Clause", ""],
+      ["Liabiliti", "Liability", ""],
+      ["Tanggungan", "Obligation / liability", ""],
+      ["Pihak pertama", "First party", "'Pihak kedua' = second party"],
+      ["Indemniti", "Indemnity", ""],
+      ["Keadaan luar jangka", "Force majeure", ""],
+      ["Notis penamatan", "Notice of termination", ""],
+      ["Tandatangan", "Signature", ""],
+      ["Wasiat", "Will (testament)", ""],
+      ["Hartanah", "Property / real estate", ""]
+    ]},
+    clientconvo: { name: "Client Conversations", emoji: "🤝", type: "legal", words: [
+      ["Boleh saya terangkan hak awak?", "May I explain your rights?", ""],
+      ["Kes ini akan dibicarakan bulan depan", "This case will be heard next month", ""],
+      ["Awak perlu tandatangan di sini", "You need to sign here", ""],
+      ["Kita perlu failkan dokumen ini secepat mungkin", "We need to file this document ASAP", ""],
+      ["Adakah awak faham terma-terma ini?", "Do you understand these terms?", ""],
+      ["Saya akan wakilkan awak di mahkamah", "I will represent you in court", ""],
+      ["Bayaran guaman dikira mengikut jam", "Legal fees are calculated hourly", ""],
+      ["Kes ini agak rumit", "This case is quite complex", ""],
+      ["Kami perlukan bukti tambahan", "We need additional evidence", ""],
+      ["Perbicaraan ditangguhkan ke tarikh lain", "The hearing is postponed to another date", ""],
+      ["Sila bawa dokumen asal", "Please bring the original documents", ""],
+      ["Kami akan hubungi awak minggu depan", "We'll contact you next week", ""]
+    ]},
+    legalterms: { name: "Legal Terms & Latin", emoji: "📜", type: "legal", words: [
+      ["Prima facie", "At first sight / on the face of it", "Malay gloss: pada pandangan pertama"],
+      ["Bona fide", "Genuine, in good faith", "Malay gloss: suci hati / ikhlas"],
+      ["Sub judice", "Under judicial consideration", "Sedang dalam pertimbangan mahkamah"],
+      ["Status quo", "The existing state of affairs", "Keadaan asal / sedia ada"],
+      ["Ultra vires", "Beyond one's legal power", "Di luar bidang kuasa"],
+      ["Obiter dictum", "A judge's incidental remark", "Pendapat sampingan hakim"],
+      ["Perbicaraan tertutup", "Closed hearing (in camera)", ""],
+      ["Permohonan sehala", "One-sided application (ex parte)", ""],
+      ["Injunksi", "Injunction", ""],
+      ["Writ saman", "Writ of summons", ""]
     ]}
   };
+  var CAT_KEYS = Object.keys(VOCAB);
 
-  var STORAGE_KEY = "belajar-progress-v1";
-  var progress = loadProgress();
+  var PROGRESS_KEY = "lancar-progress-v1";
+  var DIAG_KEY = "lancar-diagnostic-v1";
+  var progress = loadJSON(PROGRESS_KEY, {});
+  var diagResults = loadJSON(DIAG_KEY, null);
 
-  function loadProgress(){
-    try {
-      var raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : {};
-    } catch(e){ return {}; }
+  function loadJSON(key, fallback){
+    try { var raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
+    catch(e){ return fallback; }
   }
-  function saveProgress(){
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); } catch(e){}
-  }
+  function saveJSON(key, val){ try { localStorage.setItem(key, JSON.stringify(val)); } catch(e){} }
+
   function bestScore(catKey){
     var p = progress[catKey];
     return p && p.best ? p.best : 0;
   }
 
+  function shuffle(arr){
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function speak(text){
+    try {
+      if (!window.speechSynthesis) return;
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = "ms-MY";
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(u);
+    } catch(e){}
+  }
+
+  function weakCategories(){
+    if (!diagResults) return [];
+    return CAT_KEYS.filter(function(k){
+      var r = diagResults.byCategory[k];
+      return r && (r.correct / r.total) < 0.7;
+    }).sort(function(a,b){
+      return (diagResults.byCategory[a].correct / diagResults.byCategory[a].total) -
+             (diagResults.byCategory[b].correct / diagResults.byCategory[b].total);
+    });
+  }
+
+  /* -------------------- stage switching -------------------- */
+  var stages = {
+    home: document.getElementById("stage-home"),
+    diagnostic: document.getElementById("stage-diagnostic"),
+    results: document.getElementById("stage-results"),
+    study: document.getElementById("stage-study")
+  };
+  function showStage(name){
+    Object.keys(stages).forEach(function(k){ stages[k].classList.toggle("active", k === name); });
+  }
+
+  /* -------------------- home -------------------- */
   var catGrid = document.getElementById("catGrid");
-  Object.keys(VOCAB).forEach(function(key){
-    var cat = VOCAB[key];
-    var pct = Math.round((bestScore(key) / cat.words.length) * 100);
-    var card = document.createElement("button");
-    card.className = "cat-card";
-    card.innerHTML =
-      '<span class="emoji">' + cat.emoji + '</span>' +
-      '<div class="name">' + cat.name + '</div>' +
-      '<div class="count">' + cat.words.length + ' words' + (pct ? ' · best ' + pct + '%' : '') + '</div>' +
-      '<div class="bar"><div class="bar-fill" style="width:' + pct + '%"></div></div>';
-    card.addEventListener("click", function(){ openCategory(key); });
-    catGrid.appendChild(card);
+  var recoStrip = document.getElementById("recoStrip");
+
+  function renderHome(){
+    var weak = weakCategories();
+    catGrid.innerHTML = "";
+    CAT_KEYS.forEach(function(key){
+      var cat = VOCAB[key];
+      var pct = Math.round((bestScore(key) / cat.words.length) * 100);
+      var isFocus = weak.indexOf(key) !== -1;
+      var card = document.createElement("button");
+      card.className = "cat-card" + (isFocus ? " focus" : "");
+      card.innerHTML =
+        '<span class="type-tag ' + cat.type + '">' + (cat.type === "legal" ? "Legal" : "Conversation") + '</span>' +
+        '<span class="emoji">' + cat.emoji + '</span>' +
+        '<div class="name">' + cat.name + '</div>' +
+        '<div class="count">' + cat.words.length + ' items' + (pct ? " · best " + pct + "%" : "") + '</div>' +
+        '<div class="bar"><div class="bar-fill" style="width:' + pct + '%"></div></div>' +
+        (isFocus ? '<span class="focus-tag">Focus area</span>' : '');
+      card.addEventListener("click", function(){ openCategory(key); });
+      catGrid.appendChild(card);
+    });
+
+    if (diagResults) {
+      if (weak.length) {
+        recoStrip.style.display = "block";
+        recoStrip.innerHTML = "Placement check suggests focusing on <strong>" +
+          weak.map(function(k){ return VOCAB[k].name; }).join(", ") + "</strong>." +
+          '<button class="retake" id="retakeBtn">Retake placement check</button>';
+      } else {
+        recoStrip.style.display = "block";
+        recoStrip.innerHTML = "Strong across the board on your last check — nice." +
+          '<button class="retake" id="retakeBtn">Retake placement check</button>';
+      }
+      document.getElementById("retakeBtn").addEventListener("click", startDiagnostic);
+    } else {
+      recoStrip.style.display = "none";
+    }
+  }
+
+  document.getElementById("startTestBtn").addEventListener("click", startDiagnostic);
+  document.getElementById("resultsHomeBtn").addEventListener("click", function(){ renderHome(); showStage("home"); });
+  document.getElementById("backBtn").addEventListener("click", function(){ renderHome(); showStage("home"); });
+
+  /* -------------------- shared MCQ renderer -------------------- */
+  function renderChoices(container, correctText, distractorPool, onAnswered){
+    var options = shuffle([correctText].concat(shuffle(distractorPool.slice()).slice(0, Math.min(3, distractorPool.length))));
+    container.innerHTML = "";
+    var answered = false;
+    options.forEach(function(opt){
+      var btn = document.createElement("button");
+      btn.className = "choice";
+      btn.textContent = opt;
+      btn.addEventListener("click", function(){
+        if (answered) return;
+        answered = true;
+        var allBtns = container.querySelectorAll(".choice");
+        allBtns.forEach(function(b){
+          b.disabled = true;
+          if (b.textContent === correctText) b.classList.add("correct");
+          else if (b === btn) b.classList.add("wrong");
+        });
+        onAnswered(opt === correctText);
+      });
+      container.appendChild(btn);
+    });
+  }
+
+  /* -------------------- diagnostic -------------------- */
+  var diagChoices = document.getElementById("diagChoices");
+  var diagPromptWord = document.getElementById("diagPromptWord");
+  var diagCatTag = document.getElementById("diagCatTag");
+  var diagProgressLabel = document.getElementById("diagProgressLabel");
+  var diagProgressFill = document.getElementById("diagProgressFill");
+  var diagAnswerNote = document.getElementById("diagAnswerNote");
+  var diagSpeakBtn = document.getElementById("diagSpeakBtn");
+  document.getElementById("diagBackBtn").addEventListener("click", function(){ renderHome(); showStage("home"); });
+
+  var diagQueue = [];
+  var diagIndex = 0;
+  var diagByCategory = {};
+
+  function buildDiagnostic(){
+    var qs = [];
+    CAT_KEYS.forEach(function(catKey){
+      var words = VOCAB[catKey].words;
+      var picks = shuffle(words.map(function(_, i){ return i; })).slice(0, 2);
+      picks.forEach(function(idx){ qs.push({ catKey: catKey, wordIdx: idx }); });
+    });
+    return shuffle(qs);
+  }
+
+  function startDiagnostic(){
+    diagQueue = buildDiagnostic();
+    diagIndex = 0;
+    diagByCategory = {};
+    CAT_KEYS.forEach(function(k){ diagByCategory[k] = { correct: 0, total: 0 }; });
+    showStage("diagnostic");
+    renderDiagQuestion();
+  }
+
+  function renderDiagQuestion(){
+    diagAnswerNote.textContent = "";
+    var q = diagQueue[diagIndex];
+    var cat = VOCAB[q.catKey];
+    var pair = cat.words[q.wordIdx];
+    diagCatTag.textContent = cat.name;
+    diagPromptWord.textContent = pair[0];
+    diagProgressLabel.textContent = (diagIndex + 1) + " / " + diagQueue.length;
+    diagProgressFill.style.width = Math.round((diagIndex / diagQueue.length) * 100) + "%";
+    diagSpeakBtn.onclick = function(){ speak(pair[0]); };
+
+    var pool = cat.words.filter(function(_, i){ return i !== q.wordIdx; }).map(function(p){ return p[1]; });
+    renderChoices(diagChoices, pair[1], pool, function(isCorrect){
+      diagByCategory[q.catKey].total++;
+      if (isCorrect) diagByCategory[q.catKey].correct++;
+      if (pair[2]) diagAnswerNote.textContent = pair[2];
+      setTimeout(function(){
+        diagIndex++;
+        if (diagIndex < diagQueue.length) renderDiagQuestion();
+        else finishDiagnostic();
+      }, pair[2] ? 1300 : 650);
+    });
+  }
+
+  function finishDiagnostic(){
+    diagProgressFill.style.width = "100%";
+    var totalCorrect = 0, totalQs = 0;
+    CAT_KEYS.forEach(function(k){ totalCorrect += diagByCategory[k].correct; totalQs += diagByCategory[k].total; });
+    diagResults = { byCategory: diagByCategory, overall: totalCorrect + "/" + totalQs, timestamp: Date.now() };
+    saveJSON(DIAG_KEY, diagResults);
+    renderResults();
+    showStage("results");
+  }
+
+  /* -------------------- results -------------------- */
+  var resultsBigScore = document.getElementById("resultsBigScore");
+  var resultsList = document.getElementById("resultsList");
+  document.getElementById("startRecoBtn").addEventListener("click", function(){
+    var weak = weakCategories();
+    var target = weak.length ? weak[0] : CAT_KEYS[0];
+    openCategory(target);
   });
 
-  var stageCategories = document.getElementById("stage-categories");
-  var stageStudy = document.getElementById("stage-study");
-  var backBtn = document.getElementById("backBtn");
+  function renderResults(){
+    resultsBigScore.textContent = diagResults.overall;
+    var rows = CAT_KEYS.map(function(k){
+      var r = diagResults.byCategory[k];
+      var pct = r.total ? Math.round((r.correct / r.total) * 100) : 0;
+      return { key: k, pct: pct, r: r };
+    }).sort(function(a, b){ return a.pct - b.pct; });
+
+    resultsList.innerHTML = "";
+    rows.forEach(function(row){
+      var cat = VOCAB[row.key];
+      var isWeak = row.pct < 70;
+      var div = document.createElement("div");
+      div.className = "result-row" + (isWeak ? " weak" : "");
+      div.innerHTML =
+        '<div class="rr-top">' +
+          '<span class="rr-name">' + cat.emoji + ' ' + cat.name + (isWeak ? ' <span class="focus-pill">Focus</span>' : '') + '</span>' +
+          '<span class="rr-pct">' + row.r.correct + '/' + row.r.total + '</span>' +
+        '</div>' +
+        '<div class="bar"><div class="bar-fill" style="width:' + row.pct + '%"></div></div>';
+      resultsList.appendChild(div);
+    });
+  }
+
+  /* -------------------- study (flashcards / quiz) -------------------- */
   var progressLabel = document.getElementById("progressLabel");
   var flashModeBtn = document.getElementById("flashModeBtn");
   var quizModeBtn = document.getElementById("quizModeBtn");
@@ -273,27 +654,8 @@
     currentKey = key;
     currentWords = VOCAB[key].words;
     progressLabel.textContent = VOCAB[key].name;
-    stageCategories.classList.remove("active");
-    stageStudy.classList.add("active");
+    showStage("study");
     setMode("flash");
-  }
-
-  backBtn.addEventListener("click", function(){
-    stageStudy.classList.remove("active");
-    stageCategories.classList.add("active");
-    refreshCategoryProgress();
-  });
-
-  function refreshCategoryProgress(){
-    var cards = catGrid.querySelectorAll(".cat-card");
-    Object.keys(VOCAB).forEach(function(key, i){
-      var cat = VOCAB[key];
-      var pct = Math.round((bestScore(key) / cat.words.length) * 100);
-      var count = cards[i].querySelector(".count");
-      var fill = cards[i].querySelector(".bar-fill");
-      count.textContent = cat.words.length + " words" + (pct ? " · best " + pct + "%" : "");
-      fill.style.width = pct + "%";
-    });
   }
 
   function setMode(mode){
@@ -311,6 +673,8 @@
   var flashCard = document.getElementById("flashCard");
   var flashFront = document.getElementById("flashFront");
   var flashBack = document.getElementById("flashBack");
+  var flashNote = document.getElementById("flashNote");
+  var flashSpeakBtn = document.getElementById("flashSpeakBtn");
   var prevBtn = document.getElementById("prevBtn");
   var nextBtn = document.getElementById("nextBtn");
 
@@ -318,19 +682,26 @@
     var pair = currentWords[flashIndex];
     flashFlipped = false;
     flashFront.textContent = pair[0];
+    flashFront.classList.add("malay");
     flashFront.style.display = "block";
     flashBack.textContent = pair[1];
     flashBack.style.display = "none";
+    flashNote.style.display = "none";
+    flashSpeakBtn.onclick = function(e){ e.stopPropagation(); speak(pair[0]); };
   }
   flashCard.addEventListener("click", function(){
-    flashFlipped = !flashFlipped;
     var pair = currentWords[flashIndex];
+    flashFlipped = !flashFlipped;
     if (flashFlipped) {
       flashFront.textContent = pair[1];
       flashFront.classList.remove("malay");
+      flashBack.style.display = "none";
+      flashNote.style.display = pair[2] ? "block" : "none";
+      flashNote.textContent = pair[2] || "";
     } else {
       flashFront.textContent = pair[0];
       flashFront.classList.add("malay");
+      flashNote.style.display = "none";
     }
   });
   prevBtn.addEventListener("click", function(){
@@ -348,26 +719,19 @@
   var quizScoreEl = document.getElementById("quizScore");
   var quizPromptWord = document.getElementById("quizPromptWord");
   var quizChoices = document.getElementById("quizChoices");
+  var quizAnswerNote = document.getElementById("quizAnswerNote");
+  var quizSpeakBtn = document.getElementById("quizSpeakBtn");
   var quizDone = document.getElementById("quizDone");
   var quizFinalScore = document.getElementById("quizFinalScore");
+  var quizVerdict = document.getElementById("quizVerdict");
   var quizRetryBtn = document.getElementById("quizRetryBtn");
   var quizBackBtn = document.getElementById("quizBackBtn");
-  var quizQuestionsWrap = document.querySelector(".quiz-q");
-  var scoreRowEl = document.querySelector(".score-row");
+  var quizQuestionsWrap = document.querySelector("#quizView .quiz-q");
+  var scoreRowEl = document.querySelector("#quizView .score-row");
 
   var quizOrder = [];
   var quizIndex = 0;
   var quizScore = 0;
-  var quizAnswered = false;
-
-  function shuffle(arr){
-    var a = arr.slice();
-    for (var i = a.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var t = a[i]; a[i] = a[j]; a[j] = t;
-    }
-    return a;
-  }
 
   function startQuiz(){
     quizOrder = shuffle(currentWords.map(function(_, i){ return i; }));
@@ -382,49 +746,24 @@
   }
 
   function renderQuizQuestion(){
-    quizAnswered = false;
+    quizAnswerNote.textContent = "";
     quizQNum.textContent = quizIndex + 1;
     quizScoreEl.textContent = quizScore;
     var wordIdx = quizOrder[quizIndex];
     var pair = currentWords[wordIdx];
     quizPromptWord.textContent = pair[0];
+    quizSpeakBtn.onclick = function(){ speak(pair[0]); };
 
-    var correct = pair[1];
     var pool = currentWords.filter(function(_, i){ return i !== wordIdx; }).map(function(p){ return p[1]; });
-    var wrongs = shuffle(pool).slice(0, Math.min(3, pool.length));
-    var options = shuffle([correct].concat(wrongs));
-
-    quizChoices.innerHTML = "";
-    options.forEach(function(opt){
-      var btn = document.createElement("button");
-      btn.className = "choice";
-      btn.textContent = opt;
-      btn.addEventListener("click", function(){ handleAnswer(btn, opt, correct); });
-      quizChoices.appendChild(btn);
+    renderChoices(quizChoices, pair[1], pool, function(isCorrect){
+      if (isCorrect) { quizScore++; quizScoreEl.textContent = quizScore; }
+      if (pair[2]) quizAnswerNote.textContent = pair[2];
+      setTimeout(function(){
+        quizIndex++;
+        if (quizIndex < quizOrder.length) renderQuizQuestion();
+        else finishQuiz();
+      }, pair[2] ? 1300 : 700);
     });
-  }
-
-  function handleAnswer(btn, chosen, correct){
-    if (quizAnswered) return;
-    quizAnswered = true;
-    var allBtns = quizChoices.querySelectorAll(".choice");
-    allBtns.forEach(function(b){
-      b.disabled = true;
-      if (b.textContent === correct) b.classList.add("correct");
-      else if (b === btn) b.classList.add("wrong");
-    });
-    if (chosen === correct) {
-      quizScore++;
-      quizScoreEl.textContent = quizScore;
-    }
-    setTimeout(function(){
-      quizIndex++;
-      if (quizIndex < quizOrder.length) {
-        renderQuizQuestion();
-      } else {
-        finishQuiz();
-      }
-    }, 700);
   }
 
   function finishQuiz(){
@@ -433,22 +772,24 @@
     scoreRowEl.style.display = "none";
     quizDone.style.display = "block";
     quizFinalScore.textContent = quizScore + " / " + quizOrder.length;
+    var pct = Math.round((quizScore / quizOrder.length) * 100);
+    quizVerdict.textContent = pct >= 85 ? "Solid — you know this topic well." :
+      pct >= 60 ? "Good progress — a bit more practice will lock it in." :
+      "Worth revisiting — try the flashcards again before the next quiz.";
 
     if (currentKey) {
       var prev = bestScore(currentKey);
       if (quizScore > prev) {
         progress[currentKey] = { best: quizScore };
-        saveProgress();
+        saveJSON(PROGRESS_KEY, progress);
       }
     }
   }
 
   quizRetryBtn.addEventListener("click", startQuiz);
-  quizBackBtn.addEventListener("click", function(){
-    stageStudy.classList.remove("active");
-    stageCategories.classList.add("active");
-    refreshCategoryProgress();
-  });
+  quizBackBtn.addEventListener("click", function(){ renderHome(); showStage("home"); });
+
+  renderHome();
 })();
 </script>
 </body>
