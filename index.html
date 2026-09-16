@@ -96,6 +96,25 @@
     letter-spacing:.04em; text-transform:uppercase;
   }
 
+  .dialogue-list{ display:flex; flex-direction:column; gap:10px; }
+  .dialogue-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    padding:14px 16px; text-align:left; cursor:pointer; color:var(--ink);
+    display:flex; align-items:center; gap:12px; width:100%;
+    transition:border-color .15s ease;
+  }
+  .dialogue-card:hover, .dialogue-card:focus-visible{ border-color:var(--gold); outline:none; }
+  .dialogue-card .emoji{ font-size:1.3rem; flex-shrink:0; }
+  .dialogue-card .dc-txt{ flex:1; }
+  .dialogue-card .dc-title{ display:block; font-weight:600; font-size:.9rem; }
+  .dialogue-card .dc-blurb{ display:block; color:var(--ink-dim); font-size:.78rem; margin-top:2px; }
+  .dialogue-card .dc-type{
+    font-size:.6rem; text-transform:uppercase; letter-spacing:.04em; padding:3px 7px;
+    border-radius:6px; font-weight:600; flex-shrink:0;
+  }
+  .dialogue-card .dc-type.conversational{ background:rgba(63,167,154,.18); color:var(--teal); }
+  .dialogue-card .dc-type.legal{ background:rgba(217,164,65,.18); color:var(--gold-soft); }
+
   /* -------- shared top row -------- */
   .top-row{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; gap:10px; }
   .back-btn{
@@ -185,6 +204,34 @@
   }
   .results-actions{ display:flex; flex-direction:column; gap:10px; margin-top:22px; }
 
+  /* -------- dialogue -------- */
+  .dialogue-header{ text-align:center; margin-bottom:18px; }
+  .dialogue-title{ font-family:'Fraunces',serif; font-weight:700; font-size:1.25rem; color:var(--gold-soft); }
+  .dialogue-blurb{ color:var(--ink-dim); font-size:.82rem; margin-top:4px; }
+
+  .bubble-list{ display:flex; flex-direction:column; gap:12px; }
+  .bubble-row{ display:flex; flex-direction:column; max-width:84%; }
+  .bubble-row.mine{ align-self:flex-end; align-items:flex-end; }
+  .bubble-row.theirs{ align-self:flex-start; align-items:flex-start; }
+  .bubble-speaker{ font-size:.66rem; color:var(--ink-dim); text-transform:uppercase; letter-spacing:.05em; margin-bottom:4px; padding:0 4px; }
+  .bubble{
+    background:var(--panel); border:1px solid var(--line); border-radius:16px 16px 16px 4px;
+    padding:11px 34px 11px 14px; cursor:pointer; position:relative;
+  }
+  .bubble-row.mine .bubble{ background:var(--teal-deep); border-color:var(--teal); border-radius:16px 16px 4px 16px; }
+  .bubble-malay{ font-weight:600; font-size:.94rem; line-height:1.4; }
+  .bubble-english{
+    display:none; color:var(--ink-dim); font-size:.82rem; margin-top:7px; padding-top:7px;
+    border-top:1px dashed var(--line); line-height:1.4;
+  }
+  .bubble-english.show{ display:block; }
+  .bubble-speak{
+    position:absolute; top:8px; right:8px; background:none; border:1px solid var(--line);
+    color:var(--ink-dim); width:24px; height:24px; border-radius:50%; cursor:pointer; font-size:.72rem;
+    display:flex; align-items:center; justify-content:center; padding:0;
+  }
+  .bubble-speak:hover{ border-color:var(--gold); color:var(--gold-soft); }
+
   footer{ text-align:center; margin-top:34px; color:var(--ink-dim); font-size:.75rem; }
 </style>
 </head>
@@ -209,7 +256,10 @@
 
     <div id="recoStrip" class="reco-strip" style="display:none;"></div>
 
-    <div class="section-label">Practice by topic</div>
+    <div class="section-label">Conversations</div>
+    <div class="dialogue-list" id="dialogueList"></div>
+
+    <div class="section-label">Vocabulary by topic</div>
     <div class="cat-grid" id="catGrid"></div>
   </section>
 
@@ -296,6 +346,19 @@
         </div>
       </div>
     </div>
+  </section>
+
+  <!-- DIALOGUE -->
+  <section id="stage-dialogue" class="stage">
+    <div class="top-row">
+      <button class="back-btn" id="dialogueBackBtn">← Conversations</button>
+      <button class="nav-btn ghost" id="playAllBtn" style="flex:none; padding:8px 14px; font-size:.8rem;">▶ Play all</button>
+    </div>
+    <div class="dialogue-header">
+      <div class="dialogue-title" id="dialogueTitle"></div>
+      <div class="dialogue-blurb" id="dialogueBlurb"></div>
+    </div>
+    <div class="bubble-list" id="bubbleList"></div>
   </section>
 
   <footer>Selamat berlatih — happy practicing</footer>
@@ -412,6 +475,74 @@
   };
   var CAT_KEYS = Object.keys(VOCAB);
 
+  /* dialogues: [speaker, malay, english] per line. Speaker "Anda" = you, right-aligned. */
+  var DIALOGUES = {
+    catchup: { title: "Catching Up With a Friend", emoji: "☕", type: "conversational",
+      blurb: "Casual small talk after not seeing each other for a while", lines: [
+      ["Rakan", "Eh, lama tak jumpa! Apa khabar?", "Hey, long time no see! How are you?"],
+      ["Anda", "Khabar baik. Sihat-sihat je. Awak macam mana?", "I'm doing well. All good. How about you?"],
+      ["Rakan", "Boleh tahan lah. Tengah sibuk kerja je.", "Not bad. Just been busy with work."],
+      ["Anda", "Jom lepak minggu ni, kalau ada masa.", "Let's hang out this week, if you have time."],
+      ["Rakan", "Boleh! Nanti aku WhatsApp awak ye.", "Sure! I'll WhatsApp you later."],
+      ["Anda", "Okay lah, jumpa lagi!", "Okay then, see you!"]
+    ]},
+    weekend: { title: "Weekend Plans", emoji: "🥞", type: "conversational",
+      blurb: "Making a casual plan with a friend", lines: [
+      ["Rakan", "Weekend ni ada plan tak?", "Do you have plans this weekend?"],
+      ["Anda", "Takde apa-apa plan lagi. Kenapa?", "No plans yet. Why?"],
+      ["Rakan", "Jom breakfast Sabtu ni, kedai baru dekat sini sedap punya!", "Let's have breakfast this Saturday, there's a new place nearby that's really good!"],
+      ["Anda", "Wah, boleh je! Pukul berapa?", "Oh nice, sure! What time?"],
+      ["Rakan", "Pukul 9 macam mana?", "How about 9am?"],
+      ["Anda", "Okay, jumpa kat sana!", "Okay, see you there!"]
+    ]},
+    family: { title: "Family Catch-up", emoji: "👨‍👩‍👧", type: "conversational",
+      blurb: "A quick check-in call with your mother", lines: [
+      ["Ibu", "Kau dah makan ke belum ni?", "Have you eaten yet?"],
+      ["Anda", "Belum lagi, Ma. Nanti saya makan.", "Not yet, Mum. I'll eat later."],
+      ["Ibu", "Jangan skip makan, tau. Nanti sakit perut.", "Don't skip meals, you know. You'll get a stomachache."],
+      ["Anda", "Okay lah, saya makan sekejap lagi.", "Okay, I'll eat in a bit."],
+      ["Ibu", "Bila nak balik rumah?", "When are you coming home?"],
+      ["Anda", "Hujung minggu ni saya balik.", "I'm coming home this weekend."]
+    ]},
+    consultation: { title: "First Client Consultation", emoji: "🤝", type: "legal",
+      blurb: "Opening a new client meeting", lines: [
+      ["Klien", "Terima kasih sebab sudi jumpa saya hari ni.", "Thank you for agreeing to meet me today."],
+      ["Anda", "Sama-sama. Boleh awak terangkan situasi awak?", "You're welcome. Could you explain your situation?"],
+      ["Klien", "Saya ada masalah dengan kontrak sewa rumah saya.", "I have an issue with my house rental contract."],
+      ["Anda", "Baik. Boleh saya lihat dokumen kontrak tu?", "Alright. May I see the contract document?"],
+      ["Klien", "Boleh, ini salinannya.", "Sure, here's a copy."],
+      ["Anda", "Terima kasih. Saya akan semak dan hubungi awak minggu depan.", "Thank you. I'll review it and contact you next week."]
+    ]},
+    clause: { title: "Explaining a Contract Clause", emoji: "📄", type: "legal",
+      blurb: "Walking a client through liability wording", lines: [
+      ["Klien", "Klausa ni maksudnya apa sebenarnya?", "What does this clause actually mean?"],
+      ["Anda", "Klausa ni kata pihak kedua bertanggungjawab atas sebarang kerosakan.", "This clause says the second party is liable for any damages."],
+      ["Klien", "Jadi kalau ada masalah, saya yang kena bayar?", "So if there's an issue, I'm the one who has to pay?"],
+      ["Anda", "Betul, melainkan kita rundingkan semula terma tu.", "That's right, unless we renegotiate that term."],
+      ["Klien", "Boleh kita ubah klausa ni?", "Can we change this clause?"],
+      ["Anda", "Boleh, saya akan cadangkan pindaan kepada peguam sebelah sana.", "Yes, I'll propose an amendment to the lawyer on the other side."]
+    ]},
+    caseupdate: { title: "Updating a Client on Case Progress", emoji: "📋", type: "legal",
+      blurb: "Giving a status update mid-case", lines: [
+      ["Anda", "Saya nak update awak pasal kes ni.", "I wanted to update you on this case."],
+      ["Klien", "Ya, macam mana perkembangannya?", "Yes, how is it progressing?"],
+      ["Anda", "Kita dah failkan dokumen dan tunggu tarikh perbicaraan.", "We've filed the documents and are waiting for a hearing date."],
+      ["Klien", "Berapa lama biasanya proses ni ambil masa?", "How long does this process usually take?"],
+      ["Anda", "Biasanya dua hingga tiga bulan, bergantung pada mahkamah.", "Usually two to three months, depending on the court."],
+      ["Klien", "Okay, terima kasih sebab terangkan.", "Okay, thank you for explaining."]
+    ]},
+    courtbrief: { title: "Court Appearance Briefing", emoji: "⚖️", type: "legal",
+      blurb: "Preparing a client for tomorrow's hearing", lines: [
+      ["Anda", "Esok kita ada perbicaraan pukul 9 pagi.", "Tomorrow we have a hearing at 9am."],
+      ["Klien", "Saya kena buat apa semasa perbicaraan tu?", "What do I need to do during the hearing?"],
+      ["Anda", "Awak cuma perlu jawab soalan hakim dengan jujur.", "You just need to answer the judge's questions honestly."],
+      ["Klien", "Kalau saya tak faham soalan tu macam mana?", "What if I don't understand the question?"],
+      ["Anda", "Awak boleh minta hakim ulang soalan tu.", "You can ask the judge to repeat the question."],
+      ["Klien", "Baik, saya faham.", "Alright, I understand."]
+    ]}
+  };
+  var DIALOGUE_KEYS = Object.keys(DIALOGUES);
+
   var PROGRESS_KEY = "lancar-progress-v1";
   var DIAG_KEY = "lancar-diagnostic-v1";
   var progress = loadJSON(PROGRESS_KEY, {});
@@ -463,7 +594,8 @@
     home: document.getElementById("stage-home"),
     diagnostic: document.getElementById("stage-diagnostic"),
     results: document.getElementById("stage-results"),
-    study: document.getElementById("stage-study")
+    study: document.getElementById("stage-study"),
+    dialogue: document.getElementById("stage-dialogue")
   };
   function showStage(name){
     Object.keys(stages).forEach(function(k){ stages[k].classList.toggle("active", k === name); });
@@ -513,6 +645,91 @@
   document.getElementById("startTestBtn").addEventListener("click", startDiagnostic);
   document.getElementById("resultsHomeBtn").addEventListener("click", function(){ renderHome(); showStage("home"); });
   document.getElementById("backBtn").addEventListener("click", function(){ renderHome(); showStage("home"); });
+
+  /* -------------------- conversations (dialogues) -------------------- */
+  var dialogueListEl = document.getElementById("dialogueList");
+  var dialogueTitle = document.getElementById("dialogueTitle");
+  var dialogueBlurb = document.getElementById("dialogueBlurb");
+  var bubbleList = document.getElementById("bubbleList");
+  var currentDialogueKey = null;
+
+  function renderDialogueList(){
+    dialogueListEl.innerHTML = "";
+    DIALOGUE_KEYS.forEach(function(key){
+      var d = DIALOGUES[key];
+      var card = document.createElement("button");
+      card.className = "dialogue-card";
+      card.innerHTML =
+        '<span class="emoji">' + d.emoji + '</span>' +
+        '<span class="dc-txt"><span class="dc-title">' + d.title + '</span>' +
+        '<span class="dc-blurb">' + d.blurb + '</span></span>' +
+        '<span class="dc-type ' + d.type + '">' + (d.type === "legal" ? "Legal" : "Conversation") + '</span>';
+      card.addEventListener("click", function(){ openDialogue(key); });
+      dialogueListEl.appendChild(card);
+    });
+  }
+
+  function openDialogue(key){
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    currentDialogueKey = key;
+    var d = DIALOGUES[key];
+    dialogueTitle.textContent = d.title;
+    dialogueBlurb.textContent = d.blurb;
+    bubbleList.innerHTML = "";
+    d.lines.forEach(function(line){
+      var speaker = line[0], malay = line[1], english = line[2];
+      var mine = speaker === "Anda";
+      var row = document.createElement("div");
+      row.className = "bubble-row " + (mine ? "mine" : "theirs");
+
+      var speakerLabel = document.createElement("div");
+      speakerLabel.className = "bubble-speaker";
+      speakerLabel.textContent = speaker;
+
+      var bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.innerHTML =
+        '<button class="bubble-speak" title="Hear pronunciation">🔊</button>' +
+        '<div class="bubble-malay"></div>' +
+        '<div class="bubble-english"></div>';
+      bubble.querySelector(".bubble-malay").textContent = malay;
+      bubble.querySelector(".bubble-english").textContent = english;
+      bubble.querySelector(".bubble-speak").addEventListener("click", function(e){
+        e.stopPropagation();
+        speak(malay);
+      });
+      bubble.addEventListener("click", function(){
+        bubble.querySelector(".bubble-english").classList.toggle("show");
+      });
+
+      row.appendChild(speakerLabel);
+      row.appendChild(bubble);
+      bubbleList.appendChild(row);
+    });
+    showStage("dialogue");
+  }
+
+  function playDialogueAll(){
+    if (!window.speechSynthesis || !currentDialogueKey) return;
+    var d = DIALOGUES[currentDialogueKey];
+    window.speechSynthesis.cancel();
+    var i = 0;
+    function playNext(){
+      if (i >= d.lines.length) return;
+      var u = new SpeechSynthesisUtterance(d.lines[i][1]);
+      u.lang = "ms-MY";
+      u.onend = function(){ i++; setTimeout(playNext, 300); };
+      u.onerror = function(){ i++; setTimeout(playNext, 300); };
+      window.speechSynthesis.speak(u);
+    }
+    playNext();
+  }
+
+  document.getElementById("playAllBtn").addEventListener("click", playDialogueAll);
+  document.getElementById("dialogueBackBtn").addEventListener("click", function(){
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    renderHome(); showStage("home");
+  });
 
   /* -------------------- shared MCQ renderer -------------------- */
   function renderChoices(container, correctText, distractorPool, onAnswered){
@@ -789,6 +1006,7 @@
   quizRetryBtn.addEventListener("click", startQuiz);
   quizBackBtn.addEventListener("click", function(){ renderHome(); showStage("home"); });
 
+  renderDialogueList();
   renderHome();
 })();
 </script>
