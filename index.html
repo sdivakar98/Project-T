@@ -568,14 +568,47 @@
     return a;
   }
 
-  function speak(text){
+  /* prefer a real Malay voice; fall back to Indonesian (closely related, far more
+     commonly installed) rather than letting the browser pick an unrelated default */
+  var preferredVoice = null;
+  var preferredVoiceResolved = false;
+
+  function resolvePreferredVoice(){
+    if (!window.speechSynthesis) return null;
+    var voices = window.speechSynthesis.getVoices();
+    if (!voices || !voices.length) return null;
+    preferredVoiceResolved = true;
+    return voices.find(function(v){ return /^ms/i.test(v.lang); }) ||
+           voices.find(function(v){ return /^id/i.test(v.lang); }) ||
+           null;
+  }
+  function getPreferredVoice(){
+    if (!preferredVoiceResolved) preferredVoice = resolvePreferredVoice();
+    return preferredVoice;
+  }
+  if (window.speechSynthesis) {
+    window.speechSynthesis.onvoiceschanged = function(){ preferredVoice = resolvePreferredVoice(); };
+  }
+
+  /* speaks text; if onDone is given, calls it when speech finishes (for chaining) but
+     does not cancel any in-flight utterance first — callers decide that */
+  function speak(text, onDone){
     try {
-      if (!window.speechSynthesis) return;
+      if (!window.speechSynthesis) { if (onDone) onDone(); return; }
       var u = new SpeechSynthesisUtterance(text);
-      u.lang = "ms-MY";
-      window.speechSynthesis.cancel();
+      var voice = getPreferredVoice();
+      if (voice) { u.voice = voice; u.lang = voice.lang; }
+      else { u.lang = "ms-MY"; }
+      u.rate = 0.92;
+      if (onDone) { u.onend = onDone; u.onerror = onDone; }
       window.speechSynthesis.speak(u);
-    } catch(e){}
+    } catch(e){ if (onDone) onDone(); }
+  }
+
+  /* single-tap playback: interrupts whatever else is speaking */
+  function speakNow(text){
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    speak(text);
   }
 
   function weakCategories(){
@@ -696,7 +729,7 @@
       bubble.querySelector(".bubble-english").textContent = english;
       bubble.querySelector(".bubble-speak").addEventListener("click", function(e){
         e.stopPropagation();
-        speak(malay);
+        speakNow(malay);
       });
       bubble.addEventListener("click", function(){
         bubble.querySelector(".bubble-english").classList.toggle("show");
@@ -716,11 +749,9 @@
     var i = 0;
     function playNext(){
       if (i >= d.lines.length) return;
-      var u = new SpeechSynthesisUtterance(d.lines[i][1]);
-      u.lang = "ms-MY";
-      u.onend = function(){ i++; setTimeout(playNext, 300); };
-      u.onerror = function(){ i++; setTimeout(playNext, 300); };
-      window.speechSynthesis.speak(u);
+      var text = d.lines[i][1];
+      i++;
+      speak(text, function(){ setTimeout(playNext, 300); });
     }
     playNext();
   }
@@ -797,7 +828,7 @@
     diagPromptWord.textContent = pair[0];
     diagProgressLabel.textContent = (diagIndex + 1) + " / " + diagQueue.length;
     diagProgressFill.style.width = Math.round((diagIndex / diagQueue.length) * 100) + "%";
-    diagSpeakBtn.onclick = function(){ speak(pair[0]); };
+    diagSpeakBtn.onclick = function(){ speakNow(pair[0]); };
 
     var pool = cat.words.filter(function(_, i){ return i !== q.wordIdx; }).map(function(p){ return p[1]; });
     renderChoices(diagChoices, pair[1], pool, function(isCorrect){
@@ -904,7 +935,7 @@
     flashBack.textContent = pair[1];
     flashBack.style.display = "none";
     flashNote.style.display = "none";
-    flashSpeakBtn.onclick = function(e){ e.stopPropagation(); speak(pair[0]); };
+    flashSpeakBtn.onclick = function(e){ e.stopPropagation(); speakNow(pair[0]); };
   }
   flashCard.addEventListener("click", function(){
     var pair = currentWords[flashIndex];
@@ -969,7 +1000,7 @@
     var wordIdx = quizOrder[quizIndex];
     var pair = currentWords[wordIdx];
     quizPromptWord.textContent = pair[0];
-    quizSpeakBtn.onclick = function(){ speak(pair[0]); };
+    quizSpeakBtn.onclick = function(){ speakNow(pair[0]); };
 
     var pool = currentWords.filter(function(_, i){ return i !== wordIdx; }).map(function(p){ return p[1]; });
     renderChoices(quizChoices, pair[1], pool, function(isCorrect){
